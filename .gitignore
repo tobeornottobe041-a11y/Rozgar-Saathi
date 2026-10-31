@@ -1,0 +1,6 @@
+.env
+.venv/
+__pycache__/
+*.pyc
+git config --global user.name "Divya Alle"
+git config --global user.email "tobeornottobe418@gmail.com"

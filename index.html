@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rozgar Saathi – Maharashtra</title>
+<style>
+  :root {
+    --bg: #ffffff; --text: #000000; --muted: #222222;
+    --primary: #0a3a8c; --on-primary: #ffffff;
+    --accent: #ffd400; --card: #f2f5fa; --border: #000000;
+    --ok: #0b5d1e; --bad: #8a0000;
+    --fs: 20px;
+  }
+  :root[data-theme="dark"] {
+    --bg: #000000; --text: #ffffff; --muted: #f0f0f0;
+    --primary: #ffd400; --on-primary: #000000;
+    --accent: #ffd400; --card: #101010; --border: #ffffff;
+    --ok: #7dff9a; --bad: #ff9a9a;
+  }
+  * { box-sizing: border-box; }
+  html { font-size: var(--fs); }
+  body {
+    margin: 0; background: var(--bg); color: var(--text);
+    font-family: "Noto Sans Devanagari", "Segoe UI", Roboto, Arial, sans-serif;
+    line-height: 1.55;
+  }
+  :focus-visible { outline: 5px solid var(--accent); outline-offset: 3px; box-shadow: 0 0 0 3px var(--text); }
+  header { background: var(--primary); color: var(--on-primary); padding: 1rem; }
+  header h1 { margin: 0 0 .25rem; font-size: 1.6rem; }
+  header p { margin: 0; font-size: 1rem; }
+  .toolbar { display: flex; flex-wrap: wrap; gap: .5rem; margin-top: .9rem; }
+  main { max-width: 860px; margin: 0 auto; padding: 1rem; }
+  section { background: var(--card); border: 3px solid var(--border); border-radius: 14px; padding: 1rem; margin-bottom: 1.2rem; }
+  h2 { margin: 0 0 .6rem; font-size: 1.35rem; }
+  label { display: block; font-weight: 700; margin-bottom: .4rem; }
+  button, input {
+    font: inherit; min-height: 52px; border-radius: 10px; border: 3px solid var(--border);
+    padding: .5rem .9rem; color: var(--text); background: var(--bg);
+  }
+  button { cursor: pointer; font-weight: 700; }
+  button.primary { background: var(--primary); color: var(--on-primary); }
+  button.chip[aria-pressed="true"] { background: var(--accent); color: #000; }
+  .row { display: flex; flex-wrap: wrap; gap: .6rem; align-items: stretch; }
+  .row input { flex: 1 1 220px; }
+  .row button { flex: 1 1 130px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: .7rem; margin-top: .8rem; }
+  .tile { background: var(--bg); border: 3px solid var(--border); border-radius: 12px; padding: .7rem; }
+  .tile .num { font-size: 1.7rem; font-weight: 800; word-break: break-word; }
+  .tile .lbl { font-weight: 700; }
+  .tile .raw { font-size: .75rem; color: var(--muted); word-break: break-word; }
+  .msg { margin-top: .8rem; padding: .7rem; border: 3px solid var(--border); border-radius: 10px; background: var(--bg); }
+  .msg.err { border-color: var(--bad); color: var(--bad); font-weight: 700; }
+  .msg.ok { border-color: var(--ok); }
+  .q { background: var(--bg); border: 3px solid var(--border); border-radius: 12px; padding: .8rem; margin-bottom: .7rem; }
+  .q p { margin: 0 0 .5rem; font-weight: 700; }
+  .yn { display: flex; gap: .6rem; }
+  .yn button { flex: 1; }
+  .yn button[aria-pressed="true"] { background: var(--accent); color: #000; }
+  .scheme { background: var(--bg); border: 3px solid var(--ok); border-radius: 12px; padding: .8rem; margin-top: .7rem; }
+  .scheme h3 { margin: 0 0 .3rem; font-size: 1.15rem; }
+  .scheme p { margin: .2rem 0; }
+  .sr-only { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+  footer { max-width: 860px; margin: 0 auto; padding: 0 1rem 2rem; font-size: .85rem; }
+  a { color: inherit; font-weight: 700; }
+</style>
+</head>
+<body>
+
+<a class="sr-only" href="#search-section" id="skip">Skip to content</a>
+
+<header>
+  <h1 id="t-title"></h1>
+  <p id="t-sub"></p>
+  <div class="toolbar" role="group" aria-label="Settings">
+    <button class="chip" data-lang="en" aria-pressed="true" lang="en">English</button>
+    <button class="chip" data-lang="hi" aria-pressed="false" lang="hi">हिन्दी</button>
+    <button class="chip" data-lang="mr" aria-pressed="false" lang="mr">मराठी</button>
+    <button class="chip" id="btn-voice" aria-pressed="false"></button>
+    <button class="chip" id="btn-bigger"></button>
+    <button class="chip" id="btn-smaller"></button>
+    <button class="chip" id="btn-contrast" aria-pressed="false"></button>
+    <button class="chip" id="btn-readpage"></button>
+  </div>
+</header>
+
+<main>
+  <div id="live" class="sr-only" aria-live="polite" role="status"></div>
+
+  <section id="search-section" aria-labelledby="t-step1">
+    <h2 id="t-step1"></h2>
+    <label for="district" id="t-label"></label>
+    <div class="row">
+      <input id="district" list="district-list" autocomplete="off" inputmode="text">
+      <datalist id="district-list"></datalist>
+      <button class="primary" id="btn-search"></button>
+      <button id="btn-mic"></button>
+    </div>
+    <div id="result" tabindex="-1"></div>
+  </section>
+
+  <section id="elig-section" aria-labelledby="t-step2">
+    <h2 id="t-step2"></h2>
+    <p id="t-elig-intro"></p>
+    <div id="questions"></div>
+    <div class="row">
+      <button class="primary" id="btn-check"></button>
+      <button id="btn-guide"></button>
+      <button id="btn-reset"></button>
+    </div>
+    <div id="elig-result" tabindex="-1"></div>
+  </section>
+</main>
+
+<footer>
+  <p id="t-foot"></p>
+</footer>
+
+<script>
+/* ------------------------------------------------------------------ */
+/* Text in three languages                                            */
+/* ------------------------------------------------------------------ */
+const T = {
+  en: {
+    title: "Rozgar Saathi – Maharashtra",
+    sub: "Check jobs and government schemes in your district",
+    voiceOn: "🔊 Voice help: ON", voiceOff: "🔈 Voice help: OFF",
+    bigger: "A+ Bigger text", smaller: "A− Smaller text",
+    contrastOn: "◐ Dark mode: ON", contrastOff: "◐ Dark mode: OFF",
+    readPage: "🔊 Read this page",
+    step1: "Step 1: Find your district",
+    label: "Type or speak your district name",
+    placeholder: "e.g. Pune, Nagpur, Beed",
+    search: "🔍 Search", mic: "🎤 Speak",
+    listening: "Listening… please say your district name.",
+    heard: "I heard:",
+    noSpeech: "Voice input is not supported in this browser. Please type, or use Google Chrome.",
+    didntCatch: "I could not hear that. Please try again.",
+    loading: "Loading…",
+    notFound: "District not found. Please check the name and try again.",
+    emptyInput: "Please enter a district name first.",
+    employmentIn: "Employment status in",
+    listen: "🔊 Listen",
+    liveData: "Live data from Data.gov.in",
+    apiDown: "Live data is not available right now. You can still check scheme eligibility below.",
+    summaryStart: "In {d}:",
+    step2: "Step 2: Which schemes can I get?",
+    eligIntro: "Answer four simple questions. Tap Yes or No, or press the voice guide and answer by speaking.",
+    yes: "Yes", no: "No",
+    q: {
+      rural: "Do you live in a village (rural area)?",
+      adult: "Are you 18 years old or more?",
+      land: "Do you own or cultivate farm land (own, leased or sharecropped)?",
+      worker: "Are you 16–59 years old, work as a farm or daily-wage labourer, and do not pay income tax or belong to EPF/ESIC?"
+    },
+    check: "✅ Check my eligibility", guide: "🎤 Voice guide", reset: "↺ Start again",
+    answerAll: "Please answer all four questions.",
+    youMayGet: "You may be eligible for:",
+    none: "Based on your answers, no scheme matched. Please visit your Gram Panchayat or Taluka office for advice.",
+    how: "How to apply:",
+    who: "Who:",
+    guideStart: "Voice guide started. Please answer yes or no.",
+    guideDone: "Thank you. Checking now.",
+    schemes: {
+      mgnrega: { n: "MGNREGA job card – 100 days rural work", w: "Adults in rural households willing to do unskilled manual work.", h: "Apply to your Gram Panchayat for a job card, then ask for work in writing." },
+      pmkisan: { n: "PM-KISAN – income support for farmers", w: "Landholding farmer families (some groups, such as income-tax payers, are excluded).", h: "Visit your Common Service Centre (CSC) or the PM-KISAN portal with Aadhaar, bank passbook and land record." },
+      pmfby: { n: "PM Fasal Bima Yojana – crop insurance", w: "Farmers, including tenants and sharecroppers, growing notified crops.", h: "Apply through your bank, CSC or the crop insurance portal before the cut-off date of the season." },
+      kcc: { n: "Kisan Credit Card – low-cost farm loan", w: "Farmers who own or cultivate land, including tenants and sharecroppers.", h: "Ask at your bank branch or cooperative society with land records and ID." },
+      eshram: { n: "e-Shram card – unorganised worker card", w: "Unorganised workers aged 16–59, not paying income tax or in EPF/ESIC.", h: "Register free at a CSC or on the e-Shram portal with Aadhaar and a bank account." }
+    },
+    note: "This is a guide only. Final eligibility is decided by the government office. Please confirm at your Gram Panchayat, Taluka Agriculture Office or CSC.",
+    foot: "Data source: Data.gov.in (Government of India Open Government Data). This is a student prototype and not an official government service.",
+    fields: { jobcard: "Job cards", worker: "Workers", personday: "Person-days of work", household: "Households", other: "" }
+  },
+  hi: {
+    title: "रोज़गार साथी – महाराष्ट्र",
+    sub: "अपने ज़िले में रोज़गार और सरकारी योजनाएँ देखें",
+    voiceOn: "🔊 आवाज़ मदद: चालू", voiceOff: "🔈 आवाज़ मदद: बंद",
+    bigger: "A+ बड़े अक्षर", smaller: "A− छोटे अक्षर",
+    contrastOn: "◐ डार्क मोड: चालू", contrastOff: "◐ डार्क मोड: बंद",
+    readPage: "🔊 पेज सुनें",
+    step1: "चरण 1: अपना ज़िला खोजें",
+    label: "अपने ज़िले का नाम लिखें या बोलें",
+    placeholder: "जैसे पुणे, नागपुर, बीड",
+    search: "🔍 खोजें", mic: "🎤 बोलें",
+    listening: "सुन रहा हूँ… कृपया अपने ज़िले का नाम बोलें।",
+    heard: "मैंने सुना:",
+    noSpeech: "इस ब्राउज़र में आवाज़ से इनपुट उपलब्ध नहीं है। कृपया लिखें या Google Chrome इस्तेमाल करें।",
+    didntCatch: "मैं सुन नहीं पाया। कृपया फिर से बोलें।",
+    loading: "लोड हो रहा है…",
+    notFound: "ज़िला नहीं मिला। कृपया नाम जाँचकर फिर कोशिश करें।",
+    emptyInput: "कृपया पहले ज़िले का नाम डालें।",
+    employmentIn: "रोज़गार की स्थिति:",
+    listen: "🔊 सुनें",
+    liveData: "Data.gov.in से ताज़ा आँकड़े",
+    apiDown: "अभी ताज़ा आँकड़े उपलब्ध नहीं हैं। आप नीचे योजनाओं की पात्रता देख सकते हैं।",
+    summaryStart: "{d} में:",
+    step2: "चरण 2: मुझे कौन सी योजनाएँ मिल सकती हैं?",
+    eligIntro: "चार आसान सवालों के जवाब दें। हाँ या नहीं दबाएँ, या आवाज़ गाइड दबाकर बोलकर जवाब दें।",
+    yes: "हाँ", no: "नहीं",
+    q: {
+      rural: "क्या आप गाँव (ग्रामीण क्षेत्र) में रहते हैं?",
+      adult: "क्या आपकी उम्र 18 साल या उससे अधिक है?",
+      land: "क्या आप खेती की ज़मीन के मालिक हैं या उस पर खेती करते हैं (अपनी, पट्टे की या बँटाई की)?",
+      worker: "क्या आपकी उम्र 16 से 59 साल है, आप खेत या दिहाड़ी मज़दूर हैं, और आप आयकर नहीं देते तथा EPF/ESIC में नहीं हैं?"
+    },
+    check: "✅ मेरी पात्रता जाँचें", guide: "🎤 आवाज़ गाइड", reset: "↺ फिर से शुरू करें",
+    answerAll: "कृपया चारों सवालों के जवाब दें।",
+    youMayGet: "आप इन योजनाओं के लिए पात्र हो सकते हैं:",
+    none: "आपके जवाबों के अनुसार कोई योजना नहीं मिली। कृपया सलाह के लिए ग्राम पंचायत या तहसील कार्यालय जाएँ।",
+    how: "आवेदन कैसे करें:",
+    who: "किसके लिए:",
+    guideStart: "आवाज़ गाइड शुरू। कृपया हाँ या नहीं में जवाब दें।",
+    guideDone: "धन्यवाद। अब जाँच रहा हूँ।",
+    schemes: {
+      mgnrega: { n: "मनरेगा जॉब कार्ड – 100 दिन ग्रामीण काम", w: "ग्रामीण परिवारों के वयस्क सदस्य जो अकुशल शारीरिक काम करना चाहते हैं।", h: "ग्राम पंचायत में जॉब कार्ड के लिए आवेदन करें, फिर लिखित में काम माँगें।" },
+      pmkisan: { n: "पीएम-किसान – किसानों को आय सहायता", w: "ज़मीन वाले किसान परिवार (आयकर दाता आदि कुछ वर्ग बाहर हैं)।", h: "आधार, बैंक पासबुक और ज़मीन के कागज़ के साथ अपने कॉमन सर्विस सेंटर (CSC) या पीएम-किसान पोर्टल पर जाएँ।" },
+      pmfby: { n: "प्रधानमंत्री फसल बीमा योजना", w: "अधिसूचित फसल उगाने वाले किसान, किरायेदार और बँटाईदार सहित।", h: "सीज़न की अंतिम तारीख से पहले बैंक, CSC या फसल बीमा पोर्टल से आवेदन करें।" },
+      kcc: { n: "किसान क्रेडिट कार्ड – सस्ता कृषि ऋण", w: "ज़मीन के मालिक या खेती करने वाले किसान, किरायेदार और बँटाईदार सहित।", h: "ज़मीन के कागज़ और पहचान पत्र लेकर बैंक शाखा या सहकारी समिति में पूछें।" },
+      eshram: { n: "ई-श्रम कार्ड – असंगठित मज़दूर कार्ड", w: "16 से 59 साल के असंगठित मज़दूर जो आयकर नहीं देते और EPF/ESIC में नहीं हैं।", h: "आधार और बैंक खाते के साथ CSC या ई-श्रम पोर्टल पर मुफ़्त पंजीकरण करें।" }
+    },
+    note: "यह केवल एक मार्गदर्शन है। अंतिम पात्रता सरकारी कार्यालय तय करता है। कृपया ग्राम पंचायत, तालुका कृषि कार्यालय या CSC पर पुष्टि करें।",
+    foot: "आँकड़ों का स्रोत: Data.gov.in (भारत सरकार का ओपन गवर्नमेंट डेटा)। यह एक छात्र प्रोटोटाइप है, सरकारी सेवा नहीं।",
+    fields: { jobcard: "जॉब कार्ड", worker: "श्रमिक", personday: "कार्य के व्यक्ति-दिवस", household: "परिवार", other: "" }
+  },
+  mr: {
+    title: "रोजगार साथी – महाराष्ट्र",
+    sub: "तुमच्या जिल्ह्यातील रोजगार आणि सरकारी योजना पाहा",
+    voiceOn: "🔊 आवाज मदत: चालू", voiceOff: "🔈 आवाज मदत: बंद",
+    bigger: "A+ मोठे अक्षर", smaller: "A− लहान अक्षर",
+    contrastOn: "◐ डार्क मोड: चालू", contrastOff: "◐ डार्क मोड: बंद",
+    readPage: "🔊 पान ऐका",
+    step1: "पायरी १: तुमचा जिल्हा शोधा",
+    label: "जिल्ह्याचे नाव लिहा किंवा बोला",
+    placeholder: "उदा. पुणे, नागपूर, बीड",
+    search: "🔍 शोधा", mic: "🎤 बोला",
+    listening: "ऐकत आहे… कृपया जिल्ह्याचे नाव बोला.",
+    heard: "मी ऐकले:",
+    noSpeech: "या ब्राउझरमध्ये आवाजाने माहिती देता येत नाही. कृपया लिहा किंवा Google Chrome वापरा.",
+    didntCatch: "मला ऐकू आले नाही. कृपया पुन्हा बोला.",
+    loading: "लोड होत आहे…",
+    notFound: "जिल्हा सापडला नाही. कृपया नाव तपासून पुन्हा प्रयत्न करा.",
+    emptyInput: "कृपया आधी जिल्ह्याचे नाव टाका.",
+    employmentIn: "रोजगाराची स्थिती:",
+    listen: "🔊 ऐका",
+    liveData: "Data.gov.in वरील ताजी आकडेवारी",
+    apiDown: "सध्या ताजी आकडेवारी उपलब्ध नाही. तुम्ही खाली योजनांची पात्रता तपासू शकता.",
+    summaryStart: "{d} मध्ये:",
+    step2: "पायरी २: मला कोणत्या योजना मिळू शकतात?",
+    eligIntro: "चार सोप्या प्रश्नांची उत्तरे द्या. होय किंवा नाही दाबा, किंवा आवाज मार्गदर्शक दाबून बोलून उत्तर द्या.",
+    yes: "होय", no: "नाही",
+    q: {
+      rural: "तुम्ही गावात (ग्रामीण भागात) राहता का?",
+      adult: "तुमचे वय १८ वर्षे किंवा त्याहून जास्त आहे का?",
+      land: "तुम्ही शेतजमिनीचे मालक आहात किंवा ती कसता का (स्वतःची, भाड्याची किंवा बटाईची)?",
+      worker: "तुमचे वय १६ ते ५९ वर्षे आहे, तुम्ही शेतमजूर किंवा रोजंदारी कामगार आहात, आणि तुम्ही आयकर भरत नाही तसेच EPF/ESIC मध्ये नाही का?"
+    },
+    check: "✅ माझी पात्रता तपासा", guide: "🎤 आवाज मार्गदर्शक", reset: "↺ पुन्हा सुरू करा",
+    answerAll: "कृपया चारही प्रश्नांची उत्तरे द्या.",
+    youMayGet: "तुम्ही या योजनांसाठी पात्र असू शकता:",
+    none: "तुमच्या उत्तरांनुसार कोणतीही योजना आढळली नाही. कृपया सल्ल्यासाठी ग्रामपंचायत किंवा तहसील कार्यालयात जा.",
+    how: "अर्ज कसा करावा:",
+    who: "कोणासाठी:",
+    guideStart: "आवाज मार्गदर्शक सुरू. कृपया होय किंवा नाही म्हणून उत्तर द्या.",
+    guideDone: "धन्यवाद. आता तपासत आहे.",
+    schemes: {
+      mgnrega: { n: "मनरेगा जॉब कार्ड – १०० दिवस ग्रामीण काम", w: "ग्रामीण कुटुंबातील प्रौढ सदस्य जे अकुशल शारीरिक काम करण्यास तयार आहेत.", h: "ग्रामपंचायतीत जॉब कार्डसाठी अर्ज करा, नंतर लेखी स्वरूपात काम मागा." },
+      pmkisan: { n: "पीएम-किसान – शेतकऱ्यांना उत्पन्न आधार", w: "जमीनधारक शेतकरी कुटुंबे (आयकरदाते इत्यादी काही गट वगळलेले आहेत).", h: "आधार, बँक पासबुक आणि जमिनीच्या नोंदीसह कॉमन सर्व्हिस सेंटर (CSC) किंवा पीएम-किसान पोर्टलवर जा." },
+      pmfby: { n: "प्रधानमंत्री पीक विमा योजना", w: "अधिसूचित पिके घेणारे शेतकरी, भाडेकरू आणि बटाईदारांसह.", h: "हंगामाच्या अंतिम तारखेपूर्वी बँक, CSC किंवा पीक विमा पोर्टलवर अर्ज करा." },
+      kcc: { n: "किसान क्रेडिट कार्ड – स्वस्त शेती कर्ज", w: "जमिनीचे मालक किंवा शेती करणारे शेतकरी, भाडेकरू आणि बटाईदारांसह.", h: "जमिनीच्या नोंदी आणि ओळखपत्रासह बँक शाखा किंवा सहकारी संस्थेत विचारा." },
+      eshram: { n: "ई-श्रम कार्ड – असंघटित कामगार कार्ड", w: "१६ ते ५९ वर्षांचे असंघटित कामगार जे आयकर भरत नाहीत आणि EPF/ESIC मध्ये नाहीत.", h: "आधार आणि बँक खात्यासह CSC किंवा ई-श्रम पोर्टलवर मोफत नोंदणी करा." }
+    },
+    note: "हे फक्त मार्गदर्शन आहे. अंतिम पात्रता सरकारी कार्यालय ठरवते. कृपया ग्रामपंचायत, तालुका कृषी कार्यालय किंवा CSC येथे खात्री करा.",
+    foot: "आकडेवारीचा स्रोत: Data.gov.in (भारत सरकारचा खुला सरकारी डेटा). हा विद्यार्थ्याचा प्रोटोटाइप आहे, सरकारी सेवा नाही.",
+    fields: { jobcard: "जॉब कार्ड", worker: "कामगार", personday: "कामाचे व्यक्ती-दिवस", household: "कुटुंबे", other: "" }
+  }
+};
+
+/* Marathi/Hindi (Devanagari) district names so people can type or say them */
+const DISTRICT_NAMES = [
+  ["ahmednagar","अहमदनगर",["ahilyanagar","अहिल्यानगर"]],["akola","अकोला"],["amravati","अमरावती"],
+  ["aurangabad","औरंगाबाद",["chhatrapatisambhajinagar","छत्रपतीसंभाजीनगर","संभाजीनगर"]],
+  ["beed","बीड",["bid"]],["bhandara","भंडारा"],["buldhana","बुलढाणा",["buldana"]],
+  ["chandrapur","चंद्रपूर",["चंद्रपुर"]],["dhule","धुळे",["धुले"]],["gadchiroli","गडचिरोली"],
+  ["gondia","गोंदिया"],["hingoli","हिंगोली"],["jalgaon","जळगाव",["जलगाँव"]],["jalna","जालना"],
+  ["kolhapur","कोल्हापूर",["कोल्हापुर"]],["latur","लातूर"],["mumbaicity","मुंबई शहर",["mumbai","मुंबई"]],
+  ["mumbaisuburban","मुंबई उपनगर"],["nagpur","नागपूर",["नागपुर"]],["nanded","नांदेड"],
+  ["nandurbar","नंदुरबार"],["nashik","नाशिक",["nasik"]],
+  ["osmanabad","उस्मानाबाद",["dharashiv","धाराशिव"]],["palghar","पालघर"],["parbhani","परभणी"],
+  ["pune","पुणे"],["raigad","रायगड",["raigarh"]],["ratnagiri","रत्नागिरी"],["sangli","सांगली"],
+  ["satara","सातारा"],["sindhudurg","सिंधुदुर्ग"],["solapur","सोलापूर",["सोलापुर"]],
+  ["thane","ठाणे",["ठाने"]],["wardha","वर्धा"],["washim","वाशीम",["वाशिम"]],["yavatmal","यवतमाळ"]
+];
+
+const QUESTION_KEYS = ["rural", "adult", "land", "worker"];
+const SPEECH_LANG = { en: "en-IN", hi: "hi-IN", mr: "mr-IN" };
+
+/* ------------------------------------------------------------------ */
+/* State and helpers                                                  */
+/* ------------------------------------------------------------------ */
+let lang = "en";
+let voiceHelp = false;
+let fontSize = 20;
+let apiDistricts = [];
+let answers = {};
+let lastSummary = "";
+
+const $ = (id) => document.getElementById(id);
+const tr = () => T[lang];
+const normText = (s) => String(s).toLowerCase().replace(/[\s\-_.,()\/]/g, "");
+function esc(s) {
+  return String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+}
+function announce(text) { $("live").textContent = ""; setTimeout(() => { $("live").textContent = text; }, 50); }
+
+/* ---------------- Speech output (text-to-speech) ------------------ */
+function speak(text, force) {
+  if (!force && !voiceHelp) return;
+  if (!("speechSynthesis" in window) || !text) return;
+  window.speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = SPEECH_LANG[lang];
+  u.rate = 0.9;
+  const voices = window.speechSynthesis.getVoices();
+  const want = u.lang.toLowerCase();
+  const v = voices.find((x) => x.lang.replace("_", "-").toLowerCase() === want)
+         || voices.find((x) => x.lang.toLowerCase().startsWith(lang));
+  if (v) u.voice = v;
+  window.speechSynthesis.speak(u);
+}
+function speakAsync(text) {
+  return new Promise((resolve) => {
+    if (!("speechSynthesis" in window)) return resolve();
+    window.speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = SPEECH_LANG[lang]; u.rate = 0.9;
+    const v = window.speechSynthesis.getVoices().find((x) => x.lang.toLowerCase().startsWith(lang));
+    if (v) u.voice = v;
+    u.onend = resolve; u.onerror = resolve;
+    window.speechSynthesis.speak(u);
+  });
+}
+
+/* ---------------- Speech input (voice recognition) ---------------- */
+function listenOnce() {
+  return new Promise((resolve, reject) => {
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SR) return reject(new Error("unsupported"));
+    const rec = new SR();
+    rec.lang = SPEECH_LANG[lang];
+    rec.interimResults = false;
+    rec.maxAlternatives = 3;
+    rec.onresult = (e) => resolve(Array.from(e.results[0]).map((a) => a.transcript));
+    rec.onerror = (e) => reject(new Error(e.error || "error"));
+    rec.onnomatch = () => reject(new Error("nomatch"));
+    rec.start();
+  });
+}
+
+/* ---------------- Language & screen text -------------------------- */
+function applyLanguage() {
+  const t = tr();
+  document.documentElement.lang = lang;
+  document.title = t.title;
+  $("t-title").textContent = t.title;
+  $("t-sub").textContent = t.sub;
+  $("t-step1").textContent = t.step1;
+  $("t-label").textContent = t.label;
+  $("district").placeholder = t.placeholder;
+  $("btn-search").textContent = t.search;
+  $("btn-mic").textContent = t.mic;
+  $("t-step2").textContent = t.step2;
+  $("t-elig-intro").textContent = t.eligIntro;
+  $("btn-check").textContent = t.check;
+  $("btn-guide").textContent = t.guide;
+  $("btn-reset").textContent = t.reset;
+  $("t-foot").textContent = t.foot;
+  $("btn-bigger").textContent = t.bigger;
+  $("btn-smaller").textContent = t.smaller;
+  $("btn-readpage").textContent = t.readPage;
+  $("btn-voice").textContent = voiceHelp ? t.voiceOn : t.voiceOff;
+  const dark = document.documentElement.dataset.theme === "dark";
+  $("btn-contrast").textContent = dark ? t.contrastOn : t.contrastOff;
+  document.querySelectorAll("[data-lang]").forEach((b) => b.setAttribute("aria-pressed", b.dataset.lang === lang));
+  renderQuestions();
+  renderDistrictList();
+  $("result").innerHTML = "";
+  $("elig-result").innerHTML = "";
+}
+
+function renderQuestions() {
+  const t = tr();
+  $("questions").innerHTML = QUESTION_KEYS.map((k) => `
+    <div class="q" role="group" aria-labelledby="q-${k}">
+      <p id="q-${k}">${esc(t.q[k])}</p>
+      <div class="yn">
+        <button data-q="${k}" data-a="yes" aria-pressed="${answers[k] === "yes"}">${esc(t.yes)}</button>
+        <button data-q="${k}" data-a="no" aria-pressed="${answers[k] === "no"}">${esc(t.no)}</button>
+      </div>
+    </div>`).join("");
+}
+
+function entryFor(apiName) {
+  const n = normText(apiName);
+  return DISTRICT_NAMES.find((d) => d[0] === n || (d[2] || []).includes(n));
+}
+function displayName(apiName) {
+  const pretty = apiName.charAt(0).toUpperCase() + apiName.slice(1).toLowerCase();
+  if (lang === "en") return pretty;
+  const e = entryFor(apiName);
+  return e ? e[1] : pretty;
+}
+function renderDistrictList() {
+  $("district-list").innerHTML = apiDistricts.map((d) => `<option value="${esc(displayName(d))}"></option>`).join("");
+}
+
+/* ---------------- District lookup --------------------------------- */
+function resolveDistrict(text) {
+  const q = normText(text);
+  if (!q) return null;
+  for (const name of apiDistricts) {
+    const e = entryFor(name);
+    const keys = [normText(name)];
+    if (e) keys.push(e[0], normText(e[1]), ...(e[2] || []).map(normText));
+    if (keys.includes(q)) return name;
+  }
+  for (const name of apiDistricts) {           // partial match as a fallback
+    const e = entryFor(name);
+    const keys = [normText(name)];
+    if (e) keys.push(normText(e[1]));
+    if (keys.some((k) => k.includes(q) || (q.length > 3 && q.includes(k)))) return name;
+  }
+  return null;
+}
+
+/* The most useful columns of the MGNREGA dataset, with plain-language labels */
+const KEY_FIELDS = [
+  ["Total_No_of_JobCards_issued", "Job cards issued", "जारी किए गए जॉब कार्ड", "जारी केलेले जॉब कार्ड"],
+  ["Total_No_of_Active_Job_Cards", "Active job cards", "सक्रिय जॉब कार्ड", "सक्रिय जॉब कार्ड"],
+  ["Total_No_of_Active_Workers", "Active workers", "सक्रिय श्रमिक", "सक्रिय कामगार"],
+  ["Total_Households_Worked", "Households that got work", "जिन परिवारों को काम मिला", "ज्या कुटुंबांना काम मिळाले"],
+  ["Average_days_of_employment_provided_per_Household", "Average days of work per household", "प्रति परिवार औसत कार्य दिवस", "प्रति कुटुंब सरासरी कामाचे दिवस"],
+  ["Total_No_of_HHs_completed_100_Days_of_Wage_Employment", "Households that completed 100 days", "100 दिन पूरे करने वाले परिवार", "100 दिवस पूर्ण करणारी कुटुंबे"],
+  ["Average_Wage_rate_per_day_per_person", "Average wage per day (₹)", "औसत दैनिक मज़दूरी (₹)", "सरासरी रोजची मजुरी (₹)"],
+  ["Persondays_of_Central_Liability_so_far", "Person-days of work so far", "अब तक के कार्य के व्यक्ति-दिवस", "आतापर्यंतचे कामाचे व्यक्ती-दिवस"],
+  ["Women_Persondays", "Women's person-days", "महिलाओं के व्यक्ति-दिवस", "महिलांचे व्यक्ती-दिवस"],
+  ["percentage_payments_gererated_within_15_days", "Payments made within 15 days (%)", "15 दिन में हुए भुगतान (%)", "15 दिवसांत झालेली देयके (%)"]
+];
+const LANG_INDEX = { en: 1, hi: 2, mr: 3 };
+
+function pickLabel(key) {
+  const k = key.toLowerCase();
+  if (/job.?card/.test(k)) return "jobcard";
+  if (/person.?day/.test(k)) return "personday";
+  if (/house.?hold/.test(k)) return "household";
+  if (/worker/.test(k)) return "worker";
+  return "other";
+}
+function prettyKey(key) { return key.replace(/_/g, " ").replace(/\s+/g, " ").trim(); }
+function fmtNum(v) {
+  const n = Number(String(v).replace(/,/g, ""));
+  return isFinite(n) && String(v).trim() !== "" ? n.toLocaleString("en-IN", { maximumFractionDigits: 1 }) : String(v);
+}
+
+async function searchDistrict(text) {
+  const t = tr();
+  const box = $("result");
+  const name = resolveDistrict(text);
+  if (!text.trim()) { box.innerHTML = `<div class="msg err">${esc(t.emptyInput)}</div>`; speak(t.emptyInput); return; }
+  if (!name) { box.innerHTML = `<div class="msg err">${esc(t.notFound)}</div>`; speak(t.notFound); return; }
+
+  box.innerHTML = `<div class="msg">${esc(t.loading)}</div>`;
+  try {
+    const res = await fetch("/api/employment?district=" + encodeURIComponent(name));
+    const data = await res.json();
+    if (!data.ok) throw new Error(data.error || t.apiDown);
+    const rec = data.records[0];
+    const skip = /^(s\.?no|sno|sr|id|state|district|fin|year|month|remarks)/i;
+    let entries = KEY_FIELDS
+      .filter(([k]) => rec[k] !== undefined && rec[k] !== "" && rec[k] !== null)
+      .map(([k, ...labels]) => [k, rec[k], labels[LANG_INDEX[lang] - 1]]);
+    if (!entries.length) {            // other dataset: show whatever columns exist
+      entries = Object.entries(rec)
+        .filter(([k, v]) => v !== "" && v !== null && !skip.test(k))
+        .slice(0, 12)
+        .map(([k, v]) => { const c = pickLabel(k); return [k, v, c !== "other" ? t.fields[c] : prettyKey(k)]; });
+    }
+    const tiles = entries.map(([k, v, label]) =>
+      `<div class="tile"><div class="lbl">${esc(label)}</div><div class="num">${esc(fmtNum(v))}</div></div>`).join("");
+    const spoken = t.summaryStart.replace("{d}", displayName(name)) + " " +
+      entries.slice(0, 5).map(([k, v, label]) => label + " " + fmtNum(v)).join(", ") + ".";
+    lastSummary = spoken;
+    box.innerHTML = `
+      <div class="msg ok">
+        <strong>${esc(t.employmentIn)} ${esc(displayName(name))}</strong><br>
+        <small>${esc(t.liveData)}${data.period ? " · " + esc(data.period) : ""}</small>
+        <div class="grid">${tiles}</div>
+        <p><button id="btn-listen-result">${esc(t.listen)}</button></p>
+      </div>`;
+    $("btn-listen-result").onclick = () => speak(lastSummary, true);
+    announce(spoken);
+    speak(spoken);
+  } catch (err) {
+    box.innerHTML = `<div class="msg err">${esc(err.message)}<br>${esc(t.apiDown)}</div>`;
+    speak(t.apiDown);
+  }
+}
+
+/* ---------------- Eligibility ------------------------------------- */
+function eligibleSchemes(a) {
+  const out = [];
+  if (a.rural === "yes" && a.adult === "yes") out.push("mgnrega");
+  if (a.land === "yes") out.push("pmkisan", "pmfby", "kcc");
+  if (a.worker === "yes") out.push("eshram");
+  return out;
+}
+function showEligibility() {
+  const t = tr();
+  const box = $("elig-result");
+  if (QUESTION_KEYS.some((k) => !answers[k])) {
+    box.innerHTML = `<div class="msg err">${esc(t.answerAll)}</div>`;
+    speak(t.answerAll);
+    return;
+  }
+  const list = eligibleSchemes(answers);
+  if (!list.length) {
+    box.innerHTML = `<div class="msg">${esc(t.none)}</div>`;
+    announce(t.none); speak(t.none);
+    return;
+  }
+  const cards = list.map((id) => {
+    const s = t.schemes[id];
+    return `<div class="scheme"><h3>${esc(s.n)}</h3>
+      <p><strong>${esc(t.who)}</strong> ${esc(s.w)}</p>
+      <p><strong>${esc(t.how)}</strong> ${esc(s.h)}</p>
+      <button data-say="${id}">${esc(t.listen)}</button></div>`;
+  }).join("");
+  box.innerHTML = `<div class="msg ok"><strong>${esc(t.youMayGet)}</strong></div>${cards}<div class="msg">${esc(t.note)}</div>`;
+  box.querySelectorAll("[data-say]").forEach((b) => {
+    b.onclick = () => { const s = t.schemes[b.dataset.say]; speak(`${s.n}. ${s.w} ${s.h}`, true); };
+  });
+  const spoken = t.youMayGet + " " + list.map((id) => t.schemes[id].n).join(". ") + ". " + t.note;
+  announce(t.youMayGet + " " + list.map((id) => t.schemes[id].n).join(", "));
+  speak(spoken);
+  box.focus();
+}
+
+function parseYesNo(candidates) {
+  const yes = ["yes", "yeah", "yep", "ha", "haan", "han", "हाँ", "हां", "हा", "हो", "होय", "जी", "जी हाँ", "बरोबर"];
+  const no = ["no", "nope", "nahi", "nahin", "नहीं", "नही", "नाही", "नको", "ना"];
+  for (const c of candidates) {
+    const words = c.toLowerCase().trim().split(/\s+/);
+    if (words.some((w) => no.includes(w))) return "no";
+    if (words.some((w) => yes.includes(w))) return "yes";
+  }
+  return null;
+}
+
+async function runVoiceGuide() {
+  const t = tr();
+  if (!(window.SpeechRecognition || window.webkitSpeechRecognition)) {
+    $("elig-result").innerHTML = `<div class="msg err">${esc(t.noSpeech)}</div>`;
+    speak(t.noSpeech, true);
+    return;
+  }
+  answers = {};
+  renderQuestions();
+  await speakAsync(t.guideStart);
+  for (const k of QUESTION_KEYS) {
+    let got = null, tries = 0;
+    while (!got && tries < 3) {
+      await speakAsync(t.q[k]);
+      try { got = parseYesNo(await listenOnce()); } catch (e) { /* retry */ }
+      if (!got) await speakAsync(t.didntCatch);
+      tries++;
+    }
+    if (!got) return;                      // give up quietly after 3 tries
+    answers[k] = got;
+    renderQuestions();
+  }
+  await speakAsync(t.guideDone);
+  showEligibility();
+}
+
+/* ------------------------------------------------------------------ */
+/* Wire up buttons                                                    */
+/* ------------------------------------------------------------------ */
+document.querySelectorAll("[data-lang]").forEach((b) => {
+  b.onclick = () => { lang = b.dataset.lang; applyLanguage(); speak(tr().sub); };
+});
+$("btn-voice").onclick = () => {
+  voiceHelp = !voiceHelp;
+  $("btn-voice").setAttribute("aria-pressed", voiceHelp);
+  $("btn-voice").textContent = voiceHelp ? tr().voiceOn : tr().voiceOff;
+  if (voiceHelp) speak(tr().voiceOn); else window.speechSynthesis && window.speechSynthesis.cancel();
+};
+$("btn-bigger").onclick = () => { fontSize = Math.min(32, fontSize + 3); document.documentElement.style.setProperty("--fs", fontSize + "px"); };
+$("btn-smaller").onclick = () => { fontSize = Math.max(16, fontSize - 3); document.documentElement.style.setProperty("--fs", fontSize + "px"); };
+$("btn-contrast").onclick = () => {
+  const root = document.documentElement;
+  root.dataset.theme = root.dataset.theme === "dark" ? "light" : "dark";
+  $("btn-contrast").setAttribute("aria-pressed", root.dataset.theme === "dark");
+  $("btn-contrast").textContent = root.dataset.theme === "dark" ? tr().contrastOn : tr().contrastOff;
+};
+$("btn-readpage").onclick = () => {
+  const t = tr();
+  speak([t.title, t.sub, t.step1, t.label, t.step2, t.eligIntro].join(". "), true);
+};
+$("btn-search").onclick = () => searchDistrict($("district").value);
+$("district").addEventListener("keydown", (e) => { if (e.key === "Enter") searchDistrict($("district").value); });
+$("district").addEventListener("change", () => { /* picking from the list */ });
+$("btn-mic").onclick = async () => {
+  const t = tr();
+  if (!(window.SpeechRecognition || window.webkitSpeechRecognition)) {
+    $("result").innerHTML = `<div class="msg err">${esc(t.noSpeech)}</div>`;
+    speak(t.noSpeech, true);
+    return;
+  }
+  $("result").innerHTML = `<div class="msg">${esc(t.listening)}</div>`;
+  await speakAsync(voiceHelp ? t.listening : "");
+  try {
+    const alts = await listenOnce();
+    let found = null, heard = alts[0];
+    for (const a of alts) { if (resolveDistrict(a)) { found = a; break; } }
+    $("district").value = found || heard;
+    $("result").innerHTML = `<div class="msg">${esc(t.heard)} ${esc(heard)}</div>`;
+    await searchDistrict(found || heard);
+  } catch (e) {
+    $("result").innerHTML = `<div class="msg err">${esc(t.didntCatch)}</div>`;
+    speak(t.didntCatch, true);
+  }
+};
+$("questions").addEventListener("click", (e) => {
+  const b = e.target.closest("button[data-q]");
+  if (!b) return;
+  answers[b.dataset.q] = b.dataset.a;
+  renderQuestions();
+  const again = document.querySelector(`button[data-q="${b.dataset.q}"][data-a="${b.dataset.a}"]`);
+  if (again) again.focus();
+  speak(b.dataset.a === "yes" ? tr().yes : tr().no);
+});
+$("btn-check").onclick = showEligibility;
+$("btn-guide").onclick = runVoiceGuide;
+$("btn-reset").onclick = () => { answers = {}; renderQuestions(); $("elig-result").innerHTML = ""; };
+
+/* Speak the label of whatever button/input gets focus when Voice help is ON */
+document.addEventListener("focusin", (e) => {
+  if (!voiceHelp) return;
+  const el = e.target;
+  if (!(el instanceof HTMLElement)) return;
+  if (el.id === "district") { speak(tr().label); return; }
+  if (el.tagName === "BUTTON") {
+    const q = el.dataset.q ? tr().q[el.dataset.q] + " " : "";
+    speak(q + el.textContent.replace(/[^\p{L}\p{N}\s+−-]/gu, ""));
+  }
+});
+
+/* ---------------- Start ------------------------------------------- */
+async function init() {
+  window.speechSynthesis && window.speechSynthesis.getVoices();
+  applyLanguage();
+  try {
+    const res = await fetch("/api/districts");
+    const data = await res.json();
+    apiDistricts = data.districts || [];
+    renderDistrictList();
+    if (!data.ok) {
+      $("result").innerHTML = `<div class="msg err">${esc(tr().apiDown)}<br><small>${esc(data.error || "")}</small></div>`;
+    }
+  } catch (e) {
+    $("result").innerHTML = `<div class="msg err">${esc(tr().apiDown)}</div>`;
+  }
+}
+init();
+</script>
+</body>
+</html>

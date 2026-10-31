@@ -4,66 +4,172 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Rozgar Saathi – Maharashtra</title>
+<meta name="theme-color" content="#0b4f6c">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Mukta:wght@400;600;700;800&display=swap" rel="stylesheet">
+
 <style>
   :root {
-    --bg: #ffffff; --text: #000000; --muted: #222222;
-    --primary: #0a3a8c; --on-primary: #ffffff;
-    --accent: #ffd400; --card: #f2f5fa; --border: #000000;
-    --ok: #0b5d1e; --bad: #8a0000;
     --fs: 20px;
+    --bg: #e9f0ef; --card: #ffffff; --soft: #f1f6f5;
+    --text: #0d1f27; --muted: #3b4f58;
+    --line: #cbd9d6; --line-strong: #5b6f77;
+    --primary: #0b4f6c; --primary-edge: #06374d; --on-primary: #ffffff;
+    --accent: #ffc83d; --accent-edge: #8a6500; --on-accent: #1c1500;
+    --hero: #0b4f6c; --hero-deep: #06374d; --on-hero: #ffffff; --hero-soft: #d3ecf4; --hero-line: #9fd3e2;
+    --ok: #17642f; --ok-soft: #e6f4ea;
+    --bad: #a4160f; --bad-soft: #fdecea;
+    --yes-bg: #17642f; --yes-fg: #ffffff; --no-bg: #33454e; --no-fg: #ffffff;
+    --focus-ring: #0d1f27;
+    --shadow: 0 1px 2px rgba(6,55,77,.08), 0 16px 28px -18px rgba(6,55,77,.5);
+    --arrow: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 20 20'%3E%3Cpath d='M4 7l6 6 6-6' fill='none' stroke='%230d1f27' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
   }
   :root[data-theme="dark"] {
-    --bg: #000000; --text: #ffffff; --muted: #f0f0f0;
-    --primary: #ffd400; --on-primary: #000000;
-    --accent: #ffd400; --card: #101010; --border: #ffffff;
-    --ok: #7dff9a; --bad: #ff9a9a;
+    --bg: #081014; --card: #101a1f; --soft: #16242a;
+    --text: #f2f6f7; --muted: #c4d3d8;
+    --line: #2b3d45; --line-strong: #8aa0a8;
+    --primary: #66d0e3; --primary-edge: #2b8fa3; --on-primary: #00212b;
+    --accent: #ffc83d; --accent-edge: #b88a00; --on-accent: #1c1500;
+    --hero: #0e2b36; --hero-deep: #08202a; --on-hero: #ffffff; --hero-soft: #c4e3ec; --hero-line: #6fb3c4;
+    --ok: #6fe08c; --ok-soft: #10281a;
+    --bad: #ffb4ad; --bad-soft: #2a1211;
+    --yes-bg: #6fe08c; --yes-fg: #04210d; --no-bg: #d3e2e8; --no-fg: #0d1f27;
+    --focus-ring: #ffffff;
+    --shadow: 0 1px 0 rgba(255,255,255,.04), 0 16px 28px -18px rgba(0,0,0,.9);
+    --arrow: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 20 20'%3E%3Cpath d='M4 7l6 6 6-6' fill='none' stroke='%23f2f6f7' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
   }
+
   * { box-sizing: border-box; }
-  html { font-size: var(--fs); }
+  html { font-size: var(--fs); -webkit-text-size-adjust: 100%; }
   body {
     margin: 0; background: var(--bg); color: var(--text);
-    font-family: "Noto Sans Devanagari", "Segoe UI", Roboto, Arial, sans-serif;
-    line-height: 1.55;
+    font-family: "Mukta", "Noto Sans Devanagari", "Segoe UI", Roboto, Arial, sans-serif;
+    line-height: 1.6;
   }
-  :focus-visible { outline: 5px solid var(--accent); outline-offset: 3px; box-shadow: 0 0 0 3px var(--text); }
-  header { background: var(--primary); color: var(--on-primary); padding: 1rem; }
-  header h1 { margin: 0 0 .25rem; font-size: 1.6rem; }
-  header p { margin: 0; font-size: 1rem; }
-  .toolbar { display: flex; flex-wrap: wrap; gap: .5rem; margin-top: .9rem; }
-  main { max-width: 860px; margin: 0 auto; padding: 1rem; }
-  section { background: var(--card); border: 3px solid var(--border); border-radius: 14px; padding: 1rem; margin-bottom: 1.2rem; }
-  h2 { margin: 0 0 .6rem; font-size: 1.35rem; }
-  label { display: block; font-weight: 700; margin-bottom: .4rem; }
-  button, input, select {
-    font: inherit; min-height: 52px; border-radius: 10px; border: 3px solid var(--border);
-    padding: .5rem .9rem; color: var(--text); background: var(--bg);
-  }
-  button { cursor: pointer; font-weight: 700; }
-  button.primary { background: var(--primary); color: var(--on-primary); }
-  button.chip[aria-pressed="true"] { background: var(--accent); color: #000; }
-  .row { display: flex; flex-wrap: wrap; gap: .6rem; align-items: stretch; }
-  .row input, .row select { flex: 1 1 220px; }
-  .row button { flex: 1 1 130px; }
-  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: .7rem; margin-top: .8rem; }
-  .tile { background: var(--bg); border: 3px solid var(--border); border-radius: 12px; padding: .7rem; }
-  .tile .num { font-size: 1.7rem; font-weight: 800; word-break: break-word; }
-  .tile .lbl { font-weight: 700; }
-  .tile .raw { font-size: .75rem; color: var(--muted); word-break: break-word; }
-  .msg { margin-top: .8rem; padding: .7rem; border: 3px solid var(--border); border-radius: 10px; background: var(--bg); }
-  .msg.err { border-color: var(--bad); color: var(--bad); font-weight: 700; }
-  .msg.ok { border-color: var(--ok); }
-  .q { background: var(--bg); border: 3px solid var(--border); border-radius: 12px; padding: .8rem; margin-bottom: .7rem; }
-  .q p { margin: 0 0 .5rem; font-weight: 700; }
-  .yn { display: flex; gap: .6rem; }
-  .yn button { flex: 1; }
-  .yn button[aria-pressed="true"] { background: var(--accent); color: #000; }
-  .scheme { background: var(--bg); border: 3px solid var(--ok); border-radius: 12px; padding: .8rem; margin-top: .7rem; }
-  .scheme h3 { margin: 0 0 .3rem; font-size: 1.15rem; }
-  .scheme p { margin: .2rem 0; }
-  #voice-note { background: #fff; color: #000; border: 3px solid var(--accent); border-radius: 10px; padding: .6rem .8rem; margin: .8rem 0 0; font-size: .9rem; font-weight: 700; }
-  .sr-only { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
-  footer { max-width: 860px; margin: 0 auto; padding: 0 1rem 2rem; font-size: .85rem; }
   a { color: inherit; font-weight: 700; }
+  .sr-only { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+
+  /* ---------- Header: peacock blue with a Paithani-style border ---------- */
+  header { position: relative; background: var(--hero); color: var(--on-hero); padding: 1.3rem 1rem 2.4rem; }
+  .hero-inner { max-width: 860px; margin: 0 auto; }
+  .brand { display: flex; align-items: center; gap: .9rem; }
+  .logo { flex: none; width: 3.3rem; height: 3.3rem; }
+  header h1 { margin: 0; font-size: clamp(1.55rem, 6.2vw, 2.2rem); line-height: 1.15; font-weight: 800; letter-spacing: -.01em; }
+  header p#t-sub { margin: .25rem 0 0; font-size: 1rem; color: var(--hero-soft); }
+  .band {
+    position: absolute; left: 0; right: 0; bottom: 0; height: 20px;
+    background-color: var(--hero-deep);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='16' viewBox='0 0 24 16'%3E%3Cpath d='M12 1l7 7-7 7-7-7z' fill='%23ffc83d'/%3E%3Cpath d='M12 5l3 3-3 3-3-3z' fill='%23b4236b'/%3E%3C/svg%3E");
+    background-repeat: repeat-x; background-position: center; background-size: 24px 16px;
+    border-top: 2px solid var(--accent);
+  }
+
+  .toolbar { display: grid; gap: .7rem; margin-top: 1.2rem; }
+  .seg { display: grid; grid-template-columns: repeat(3, 1fr); gap: .5rem; }
+  .tools { display: flex; flex-wrap: wrap; gap: .5rem; }
+  .tools .chip { flex: 1 1 auto; }
+  button.chip {
+    background: transparent; color: var(--on-hero); border-color: var(--hero-line);
+    box-shadow: none; min-height: 48px; font-size: .85rem; padding: .4rem .8rem;
+  }
+  .seg button.chip { min-height: 54px; font-size: 1.05rem; }
+  button.chip[aria-pressed="true"] { background: var(--accent); color: var(--on-accent); border-color: var(--accent); }
+
+  #voice-note {
+    background: #fff4cc; color: #3a2a00; border: 2px solid var(--accent); border-radius: 14px;
+    padding: .65rem .9rem; margin: .9rem 0 0; font-size: .9rem; font-weight: 700;
+  }
+
+  /* ---------- Page body ---------- */
+  main { max-width: 860px; margin: 0 auto; padding: 1.5rem 1rem .4rem; }
+  section {
+    background: var(--card); border-radius: 22px; padding: 1.3rem 1.2rem 1.4rem 1.6rem; margin-bottom: 1.5rem;
+    box-shadow: var(--shadow), inset 8px 0 0 var(--rail, var(--primary));
+  }
+  #elig-section { --rail: var(--accent); }
+  h2 { margin: 0 0 .7rem; font-size: 1.5rem; font-weight: 800; line-height: 1.25; }
+  #t-elig-intro { margin: 0 0 1rem; color: var(--muted); }
+  label { display: block; font-weight: 700; margin-bottom: .5rem; color: var(--muted); }
+
+  /* ---------- Controls: big, tactile, clearly labelled ---------- */
+  button, input, select {
+    font: inherit; min-height: 56px; border-radius: 14px; border: 2px solid var(--line-strong);
+    padding: .55rem 1rem; color: var(--text); background: var(--card);
+  }
+  button {
+    cursor: pointer; font-weight: 700; box-shadow: 0 3px 0 var(--line-strong);
+    transition: transform .08s ease, box-shadow .08s ease, background-color .15s ease;
+  }
+  button.primary { background: var(--primary); color: var(--on-primary); border-color: var(--primary-edge); box-shadow: 0 3px 0 var(--primary-edge); }
+  #btn-mic, #btn-guide { background: var(--accent); color: var(--on-accent); border-color: var(--accent-edge); box-shadow: 0 3px 0 var(--accent-edge); }
+  select {
+    appearance: none; -webkit-appearance: none; min-height: 60px; font-size: 1.1rem; font-weight: 600; cursor: pointer;
+    padding-right: 3rem; background-image: var(--arrow); background-repeat: no-repeat;
+    background-position: right 1rem center; background-size: 1.1rem; box-shadow: 0 3px 0 var(--line-strong);
+  }
+  @media (hover: hover) { button:hover { filter: brightness(.96); } }
+  button:active { transform: translateY(3px); box-shadow: none !important; }
+  button.chip:active { transform: none; }
+
+  .row { display: flex; flex-wrap: wrap; gap: .75rem; align-items: stretch; }
+  .row select { flex: 1 1 100%; }
+  .row button { flex: 1 1 9rem; }
+  .actions { margin-top: .6rem; }
+  .actions #btn-check { flex-basis: 100%; }
+
+  /* ---------- Results ---------- */
+  .msg {
+    margin-top: 1rem; padding: .9rem 1rem; border-radius: 16px;
+    background: var(--soft); border: 2px solid var(--line);
+  }
+  .msg.ok { border: 0; box-shadow: inset 6px 0 0 var(--ok); padding-left: 1.3rem; }
+  .msg.ok small { color: var(--muted); font-size: .8rem; }
+  .msg.err { background: var(--bad-soft); border-color: var(--bad); color: var(--bad); font-weight: 700; }
+  .msg p { margin: .6rem 0 0; }
+
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr)); gap: .7rem; margin-top: .9rem; }
+  .tile { background: var(--card); border: 2px solid var(--line); border-radius: 16px; padding: .75rem .9rem; }
+  .tile .lbl { font-size: .85rem; font-weight: 700; color: var(--muted); line-height: 1.35; }
+  .tile .num { margin-top: .15rem; font-size: 1.9rem; line-height: 1.15; font-weight: 800; color: var(--primary); font-variant-numeric: tabular-nums; word-break: break-word; }
+  .grid .tile:first-child { grid-column: 1 / -1; background: var(--primary); border-color: var(--primary); }
+  .grid .tile:first-child .lbl { color: var(--on-primary); }
+  .grid .tile:first-child .num { color: var(--on-primary); font-size: 2.6rem; }
+
+  /* ---------- Eligibility questions ---------- */
+  #questions { counter-reset: q; }
+  .q {
+    counter-increment: q; display: grid; grid-template-columns: auto 1fr; column-gap: .85rem; row-gap: .6rem; align-items: start;
+    background: var(--soft); border: 2px solid var(--line); border-radius: 18px; padding: .9rem; margin-bottom: .8rem;
+  }
+  .q::before {
+    content: counter(q); display: grid; place-items: center; width: 2.2rem; height: 2.2rem; border-radius: 50%;
+    background: var(--primary); color: var(--on-primary); font-weight: 800; line-height: 1;
+  }
+  .q.done { border-color: var(--ok); }
+  .q.done::before { content: "✓"; background: var(--yes-bg); color: var(--yes-fg); }
+  .q p { margin: 0; font-weight: 700; padding-top: .1rem; }
+  .yn { grid-column: 1 / -1; display: flex; gap: .7rem; }
+  .yn button { flex: 1; min-height: 58px; font-size: 1.05rem; }
+  .yn button[data-a="yes"]::before { content: "✓  "; }
+  .yn button[data-a="no"]::before { content: "✕  "; }
+  .yn button[data-a="yes"][aria-pressed="true"] { background: var(--yes-bg); color: var(--yes-fg); border-color: var(--yes-bg); box-shadow: 0 3px 0 rgba(0,0,0,.35); }
+  .yn button[data-a="no"][aria-pressed="true"] { background: var(--no-bg); color: var(--no-fg); border-color: var(--no-bg); box-shadow: 0 3px 0 rgba(0,0,0,.35); }
+
+  .scheme { background: var(--ok-soft); border: 2px solid var(--ok); border-radius: 18px; padding: 1rem 1.1rem; margin-top: .8rem; }
+  .scheme h3 { margin: 0 0 .5rem; font-size: 1.2rem; font-weight: 800; line-height: 1.3; color: var(--ok); }
+  .scheme p { margin: .5rem 0; }
+  .scheme p strong { display: block; font-size: .8rem; font-weight: 700; color: var(--muted); }
+  .scheme button { margin-top: .4rem; min-height: 48px; }
+
+  footer { max-width: 860px; margin: 0 auto; padding: 1rem 1rem 2.4rem; font-size: .85rem; color: var(--muted); }
+  footer p { margin: 0; padding-top: 1rem; border-top: 2px solid var(--line); }
+
+  /* ---------- Keyboard focus: double ring so it shows on any background ---------- */
+  :is(button, select, input, a, [tabindex]):focus-visible {
+    outline: 4px solid var(--accent); outline-offset: 3px; box-shadow: 0 0 0 3px var(--focus-ring) !important;
+  }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
 </style>
 </head>
 <body>
@@ -71,19 +177,36 @@
 <a class="sr-only" href="#search-section" id="skip">Skip to content</a>
 
 <header>
-  <h1 id="t-title"></h1>
-  <p id="t-sub"></p>
-  <div class="toolbar" role="group" aria-label="Settings">
-    <button class="chip" data-lang="en" aria-pressed="true" lang="en">English</button>
-    <button class="chip" data-lang="hi" aria-pressed="false" lang="hi">हिन्दी</button>
-    <button class="chip" data-lang="mr" aria-pressed="false" lang="mr">मराठी</button>
-    <button class="chip" id="btn-voice" aria-pressed="false"></button>
-    <button class="chip" id="btn-bigger"></button>
-    <button class="chip" id="btn-smaller"></button>
-    <button class="chip" id="btn-contrast" aria-pressed="false"></button>
-    <button class="chip" id="btn-readpage"></button>
+  <div class="hero-inner">
+    <div class="brand">
+      <svg class="logo" viewBox="0 0 52 52" aria-hidden="true" focusable="false">
+        <circle cx="26" cy="26" r="26" fill="#ffc83d"/>
+        <path d="M26 40V24" stroke="#0b4f6c" stroke-width="3.5" stroke-linecap="round" fill="none"/>
+        <path d="M26 27c0-8 5-12 13-12 0 8-5 12-13 12z" fill="#0b4f6c"/>
+        <path d="M26 31c0-6-4-10-11-10 0 6 4 10 11 10z" fill="#b4236b"/>
+      </svg>
+      <div>
+        <h1 id="t-title"></h1>
+        <p id="t-sub"></p>
+      </div>
+    </div>
+    <div class="toolbar" role="group" aria-label="Settings">
+      <div class="seg" role="group" aria-label="Language / भाषा / भाषा">
+        <button class="chip" data-lang="en" aria-pressed="true" lang="en">English</button>
+        <button class="chip" data-lang="hi" aria-pressed="false" lang="hi">हिन्दी</button>
+        <button class="chip" data-lang="mr" aria-pressed="false" lang="mr">मराठी</button>
+      </div>
+      <div class="tools">
+        <button class="chip" id="btn-voice" aria-pressed="false"></button>
+        <button class="chip" id="btn-bigger"></button>
+        <button class="chip" id="btn-smaller"></button>
+        <button class="chip" id="btn-contrast" aria-pressed="false"></button>
+        <button class="chip" id="btn-readpage"></button>
+      </div>
+    </div>
+    <p id="voice-note" role="status" hidden></p>
   </div>
-  <p id="voice-note" role="status" hidden></p>
+  <div class="band" aria-hidden="true"></div>
 </header>
 
 <main>
@@ -104,7 +227,7 @@
     <h2 id="t-step2"></h2>
     <p id="t-elig-intro"></p>
     <div id="questions"></div>
-    <div class="row">
+    <div class="row actions">
       <button class="primary" id="btn-check"></button>
       <button id="btn-guide"></button>
       <button id="btn-reset"></button>
@@ -284,15 +407,16 @@ const T = {
 
 /* Marathi/Hindi (Devanagari) district names so people can type or say them */
 const DISTRICT_NAMES = [
-  ["ahmednagar","अहमदनगर",["ahilyanagar","अहिल्यानगर"]],["akola","अकोला"],["amravati","अमरावती"],
-  ["aurangabad","औरंगाबाद",["chhatrapatisambhajinagar","छत्रपतीसंभाजीनगर","संभाजीनगर"]],
+  ["ahmednagar","अहमदनगर",["ahmadnagar"]],["ahilyanagar","अहिल्यानगर",["ahmednagar","अहमदनगर"]],["akola","अकोला"],["amravati","अमरावती"],
+  ["aurangabad","औरंगाबाद"],
+  ["chatrapatisambhajinagar","छत्रपती संभाजीनगर",["chhatrapatisambhajinagar","sambhajinagar","छत्रपतीसंभाजीनगर","संभाजीनगर","aurangabad","औरंगाबाद"]],
   ["beed","बीड",["bid"]],["bhandara","भंडारा"],["buldhana","बुलढाणा",["buldana"]],
   ["chandrapur","चंद्रपूर",["चंद्रपुर"]],["dhule","धुळे",["धुले"]],["gadchiroli","गडचिरोली"],
   ["gondia","गोंदिया"],["hingoli","हिंगोली"],["jalgaon","जळगाव",["जलगाँव"]],["jalna","जालना"],
   ["kolhapur","कोल्हापूर",["कोल्हापुर"]],["latur","लातूर"],["mumbaicity","मुंबई शहर",["mumbai","मुंबई"]],
   ["mumbaisuburban","मुंबई उपनगर"],["nagpur","नागपूर",["नागपुर"]],["nanded","नांदेड"],
   ["nandurbar","नंदुरबार"],["nashik","नाशिक",["nasik"]],
-  ["osmanabad","उस्मानाबाद",["dharashiv","धाराशिव"]],["palghar","पालघर"],["parbhani","परभणी"],
+  ["osmanabad","उस्मानाबाद",["dharashiv","धाराशिव"]],["dharashiv","धाराशिव",["osmanabad","उस्मानाबाद","धाराशीव"]],["palghar","पालघर"],["parbhani","परभणी"],
   ["pune","पुणे"],["raigad","रायगड",["raigarh"]],["ratnagiri","रत्नागिरी"],["sangli","सांगली"],
   ["satara","सातारा"],["sindhudurg","सिंधुदुर्ग"],["solapur","सोलापूर",["सोलापुर"]],
   ["thane","ठाणे",["ठाने"]],["wardha","वर्धा"],["washim","वाशीम",["वाशिम"]],["yavatmal","यवतमाळ"]
@@ -438,7 +562,7 @@ function applyLanguage() {
 function renderQuestions() {
   const t = tr();
   $("questions").innerHTML = QUESTION_KEYS.map((k) => `
-    <div class="q" role="group" aria-labelledby="q-${k}">
+    <div class="q${answers[k] ? " done" : ""}" role="group" aria-labelledby="q-${k}">
       <p id="q-${k}">${esc(t.q[k])}</p>
       <div class="yn">
         <button data-q="${k}" data-a="yes" aria-pressed="${answers[k] === "yes"}">${esc(t.yes)}</button>
@@ -449,7 +573,7 @@ function renderQuestions() {
 
 function entryFor(apiName) {
   const n = normText(apiName);
-  return DISTRICT_NAMES.find((d) => d[0] === n || (d[2] || []).includes(n));
+  return DISTRICT_NAMES.find((d) => d[0] === n) || DISTRICT_NAMES.find((d) => (d[2] || []).includes(n));
 }
 function displayName(apiName) {
   const pretty = apiName.charAt(0).toUpperCase() + apiName.slice(1).toLowerCase();

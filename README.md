@@ -58,3 +58,13 @@ To test on your phone, run with `flask run --host 0.0.0.0` (same Wi-Fi) and open
 - Never upload `.env` to GitHub (it is already in `.gitignore`).
 - The scheme eligibility texts are general guidance; verify them against current official guidelines (scheme names and rules change), and have a native speaker review the Hindi and Marathi wording.
 - `app.py` runs in debug mode for local use only. For a real deployment use a production server such as gunicorn.
+
+## Hosting online (Render etc.)
+
+Data.gov.in may refuse connections from servers outside India, so the hosted site should not call it live. Instead:
+
+1. On your own computer, with `.env` filled in, run `python fetch_data.py`. This saves `data/maharashtra_mgnrega.json`.
+2. Commit and push that file (`git add data/maharashtra_mgnrega.json`, `git commit`, `git push`).
+3. The website reads the file, so **no API key is needed on the host**. Repeat steps 1-2 whenever you want fresher numbers (for example once a month).
+
+Set `USE_LIVE=1` only if your host can reach Data.gov.in and you want live calls. Start command on Render: `gunicorn app:app`.

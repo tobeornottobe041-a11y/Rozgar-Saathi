@@ -34,7 +34,7 @@
   section { background: var(--card); border: 3px solid var(--border); border-radius: 14px; padding: 1rem; margin-bottom: 1.2rem; }
   h2 { margin: 0 0 .6rem; font-size: 1.35rem; }
   label { display: block; font-weight: 700; margin-bottom: .4rem; }
-  button, input {
+  button, input, select {
     font: inherit; min-height: 52px; border-radius: 10px; border: 3px solid var(--border);
     padding: .5rem .9rem; color: var(--text); background: var(--bg);
   }
@@ -42,7 +42,7 @@
   button.primary { background: var(--primary); color: var(--on-primary); }
   button.chip[aria-pressed="true"] { background: var(--accent); color: #000; }
   .row { display: flex; flex-wrap: wrap; gap: .6rem; align-items: stretch; }
-  .row input { flex: 1 1 220px; }
+  .row input, .row select { flex: 1 1 220px; }
   .row button { flex: 1 1 130px; }
   .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: .7rem; margin-top: .8rem; }
   .tile { background: var(--bg); border: 3px solid var(--border); border-radius: 12px; padding: .7rem; }
@@ -60,6 +60,7 @@
   .scheme { background: var(--bg); border: 3px solid var(--ok); border-radius: 12px; padding: .8rem; margin-top: .7rem; }
   .scheme h3 { margin: 0 0 .3rem; font-size: 1.15rem; }
   .scheme p { margin: .2rem 0; }
+  #voice-note { background: #fff; color: #000; border: 3px solid var(--accent); border-radius: 10px; padding: .6rem .8rem; margin: .8rem 0 0; font-size: .9rem; font-weight: 700; }
   .sr-only { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
   footer { max-width: 860px; margin: 0 auto; padding: 0 1rem 2rem; font-size: .85rem; }
   a { color: inherit; font-weight: 700; }
@@ -82,6 +83,7 @@
     <button class="chip" id="btn-contrast" aria-pressed="false"></button>
     <button class="chip" id="btn-readpage"></button>
   </div>
+  <p id="voice-note" role="status" hidden></p>
 </header>
 
 <main>
@@ -91,8 +93,7 @@
     <h2 id="t-step1"></h2>
     <label for="district" id="t-label"></label>
     <div class="row">
-      <input id="district" list="district-list" autocomplete="off" inputmode="text">
-      <datalist id="district-list"></datalist>
+      <select id="district"></select>
       <button class="primary" id="btn-search"></button>
       <button id="btn-mic"></button>
     </div>
@@ -128,9 +129,10 @@ const T = {
     bigger: "A+ Bigger text", smaller: "A− Smaller text",
     contrastOn: "◐ Dark mode: ON", contrastOff: "◐ Dark mode: OFF",
     readPage: "🔊 Read this page",
+    voiceFallback: "", voiceMissing: "",
     step1: "Step 1: Find your district",
-    label: "Type or speak your district name",
-    placeholder: "e.g. Pune, Nagpur, Beed",
+    label: "Choose or speak your district",
+    choose: "— Select your district —",
     search: "🔍 Search", mic: "🎤 Speak",
     listening: "Listening… please say your district name.",
     heard: "I heard:",
@@ -138,7 +140,7 @@ const T = {
     didntCatch: "I could not hear that. Please try again.",
     loading: "Loading…",
     notFound: "District not found. Please check the name and try again.",
-    emptyInput: "Please enter a district name first.",
+    emptyInput: "Please select your district first.",
     employmentIn: "Employment status in",
     listen: "🔊 Listen",
     liveData: "Live data from Data.gov.in",
@@ -179,9 +181,11 @@ const T = {
     bigger: "A+ बड़े अक्षर", smaller: "A− छोटे अक्षर",
     contrastOn: "◐ डार्क मोड: चालू", contrastOff: "◐ डार्क मोड: बंद",
     readPage: "🔊 पेज सुनें",
+    voiceFallback: "इस डिवाइस पर हिन्दी आवाज़ नहीं मिली। बेहतर आवाज़ के लिए Microsoft Edge या Android फ़ोन पर Chrome इस्तेमाल करें।",
+    voiceMissing: "इस डिवाइस पर हिन्दी आवाज़ नहीं मिली। बेहतर आवाज़ के लिए Microsoft Edge या Android फ़ोन पर Chrome इस्तेमाल करें।",
     step1: "चरण 1: अपना ज़िला खोजें",
-    label: "अपने ज़िले का नाम लिखें या बोलें",
-    placeholder: "जैसे पुणे, नागपुर, बीड",
+    label: "अपना ज़िला चुनें या बोलें",
+    choose: "— अपना ज़िला चुनें —",
     search: "🔍 खोजें", mic: "🎤 बोलें",
     listening: "सुन रहा हूँ… कृपया अपने ज़िले का नाम बोलें।",
     heard: "मैंने सुना:",
@@ -189,7 +193,7 @@ const T = {
     didntCatch: "मैं सुन नहीं पाया। कृपया फिर से बोलें।",
     loading: "लोड हो रहा है…",
     notFound: "ज़िला नहीं मिला। कृपया नाम जाँचकर फिर कोशिश करें।",
-    emptyInput: "कृपया पहले ज़िले का नाम डालें।",
+    emptyInput: "कृपया पहले अपना ज़िला चुनें।",
     employmentIn: "रोज़गार की स्थिति:",
     listen: "🔊 सुनें",
     liveData: "Data.gov.in से ताज़ा आँकड़े",
@@ -230,9 +234,11 @@ const T = {
     bigger: "A+ मोठे अक्षर", smaller: "A− लहान अक्षर",
     contrastOn: "◐ डार्क मोड: चालू", contrastOff: "◐ डार्क मोड: बंद",
     readPage: "🔊 पान ऐका",
+    voiceFallback: "या डिव्हाइसवर मराठी आवाज नाही, म्हणून हिंदी आवाज वापरला जात आहे. चांगल्या आवाजासाठी Microsoft Edge किंवा Android फोनवरील Chrome वापरा.",
+    voiceMissing: "या डिव्हाइसवर मराठी किंवा हिंदी आवाज सापडला नाही. कृपया Microsoft Edge किंवा Android फोनवरील Chrome वापरून पाहा.",
     step1: "पायरी १: तुमचा जिल्हा शोधा",
-    label: "जिल्ह्याचे नाव लिहा किंवा बोला",
-    placeholder: "उदा. पुणे, नागपूर, बीड",
+    label: "तुमचा जिल्हा निवडा किंवा बोला",
+    choose: "— तुमचा जिल्हा निवडा —",
     search: "🔍 शोधा", mic: "🎤 बोला",
     listening: "ऐकत आहे… कृपया जिल्ह्याचे नाव बोला.",
     heard: "मी ऐकले:",
@@ -240,7 +246,7 @@ const T = {
     didntCatch: "मला ऐकू आले नाही. कृपया पुन्हा बोला.",
     loading: "लोड होत आहे…",
     notFound: "जिल्हा सापडला नाही. कृपया नाव तपासून पुन्हा प्रयत्न करा.",
-    emptyInput: "कृपया आधी जिल्ह्याचे नाव टाका.",
+    emptyInput: "कृपया आधी तुमचा जिल्हा निवडा.",
     employmentIn: "रोजगाराची स्थिती:",
     listen: "🔊 ऐका",
     liveData: "Data.gov.in वरील ताजी आकडेवारी",
@@ -314,30 +320,71 @@ function esc(s) {
 function announce(text) { $("live").textContent = ""; setTimeout(() => { $("live").textContent = text; }, 50); }
 
 /* ---------------- Speech output (text-to-speech) ------------------ */
+let VOICES = [];
+function loadVoices() {
+  if (!("speechSynthesis" in window)) return;
+  VOICES = window.speechSynthesis.getVoices();
+  updateVoiceNote();
+}
+if ("speechSynthesis" in window) window.speechSynthesis.onvoiceschanged = loadVoices;
+
+function voiceLang(v) { return v.lang.replace("_", "-").toLowerCase(); }
+function findVoice(code) {
+  const want = code.toLowerCase(), prefix = want.split("-")[0];
+  return VOICES.find((v) => voiceLang(v) === want)
+      || VOICES.find((v) => voiceLang(v) === prefix || voiceLang(v).startsWith(prefix + "-"))
+      || null;
+}
+/* Best voice for the chosen language; Marathi falls back to a Hindi voice (same script) */
+function pickVoice() {
+  if ("speechSynthesis" in window && !VOICES.length) VOICES = window.speechSynthesis.getVoices();
+  let v = findVoice(SPEECH_LANG[lang]);
+  if (v) return { voice: v, code: SPEECH_LANG[lang], fallback: false };
+  if (lang === "mr") {
+    v = findVoice("hi-IN");
+    if (v) return { voice: v, code: "hi-IN", fallback: true };
+  }
+  return { voice: null, code: SPEECH_LANG[lang], fallback: lang !== "en" };
+}
+function updateVoiceNote() {
+  const el = $("voice-note");
+  if (!el) return;
+  const p = pickVoice();
+  if (lang === "en" || !VOICES.length || !p.fallback) { el.hidden = true; return; }
+  el.textContent = p.voice ? tr().voiceFallback : tr().voiceMissing;
+  el.hidden = false;
+}
+/* Long text is split into sentences: Chrome stops reading long passages */
+function utterances(text) {
+  const parts = String(text).match(/[^.।?!]+[.।?!]*/g) || [String(text)];
+  const p = pickVoice();
+  return parts.map((x) => x.trim()).filter(Boolean).map((x) => {
+    const u = new SpeechSynthesisUtterance(x);
+    u.lang = p.code;
+    u.rate = 0.9;
+    if (p.voice) u.voice = p.voice;
+    return u;
+  });
+}
 function speak(text, force) {
   if (!force && !voiceHelp) return;
   if (!("speechSynthesis" in window) || !text) return;
-  window.speechSynthesis.cancel();
-  const u = new SpeechSynthesisUtterance(text);
-  u.lang = SPEECH_LANG[lang];
-  u.rate = 0.9;
-  const voices = window.speechSynthesis.getVoices();
-  const want = u.lang.toLowerCase();
-  const v = voices.find((x) => x.lang.replace("_", "-").toLowerCase() === want)
-         || voices.find((x) => x.lang.toLowerCase().startsWith(lang));
-  if (v) u.voice = v;
-  window.speechSynthesis.speak(u);
+  const synth = window.speechSynthesis;
+  synth.cancel();
+  if (synth.paused) synth.resume();
+  utterances(text).forEach((u) => synth.speak(u));
 }
 function speakAsync(text) {
   return new Promise((resolve) => {
-    if (!("speechSynthesis" in window)) return resolve();
-    window.speechSynthesis.cancel();
-    const u = new SpeechSynthesisUtterance(text);
-    u.lang = SPEECH_LANG[lang]; u.rate = 0.9;
-    const v = window.speechSynthesis.getVoices().find((x) => x.lang.toLowerCase().startsWith(lang));
-    if (v) u.voice = v;
-    u.onend = resolve; u.onerror = resolve;
-    window.speechSynthesis.speak(u);
+    if (!("speechSynthesis" in window) || !text) return resolve();
+    const synth = window.speechSynthesis;
+    synth.cancel();
+    const list = utterances(text);
+    if (!list.length) return resolve();
+    list.forEach((u, i) => {
+      if (i === list.length - 1) { u.onend = resolve; u.onerror = resolve; }
+      synth.speak(u);
+    });
   });
 }
 
@@ -366,7 +413,6 @@ function applyLanguage() {
   $("t-sub").textContent = t.sub;
   $("t-step1").textContent = t.step1;
   $("t-label").textContent = t.label;
-  $("district").placeholder = t.placeholder;
   $("btn-search").textContent = t.search;
   $("btn-mic").textContent = t.mic;
   $("t-step2").textContent = t.step2;
@@ -384,6 +430,7 @@ function applyLanguage() {
   document.querySelectorAll("[data-lang]").forEach((b) => b.setAttribute("aria-pressed", b.dataset.lang === lang));
   renderQuestions();
   renderDistrictList();
+  updateVoiceNote();
   $("result").innerHTML = "";
   $("elig-result").innerHTML = "";
 }
@@ -411,7 +458,12 @@ function displayName(apiName) {
   return e ? e[1] : pretty;
 }
 function renderDistrictList() {
-  $("district-list").innerHTML = apiDistricts.map((d) => `<option value="${esc(displayName(d))}"></option>`).join("");
+  const sel = $("district");
+  const keep = sel.value;                       // keep the chosen district when language changes
+  const sorted = apiDistricts.slice().sort((a, b) => displayName(a).localeCompare(displayName(b), lang));
+  sel.innerHTML = `<option value="">${esc(tr().choose)}</option>` +
+    sorted.map((d) => `<option value="${esc(d)}">${esc(displayName(d))}</option>`).join("");
+  if (keep && apiDistricts.includes(keep)) sel.value = keep;
 }
 
 /* ---------------- District lookup --------------------------------- */
@@ -607,8 +659,7 @@ $("btn-readpage").onclick = () => {
   speak([t.title, t.sub, t.step1, t.label, t.step2, t.eligIntro].join(". "), true);
 };
 $("btn-search").onclick = () => searchDistrict($("district").value);
-$("district").addEventListener("keydown", (e) => { if (e.key === "Enter") searchDistrict($("district").value); });
-$("district").addEventListener("change", () => { /* picking from the list */ });
+$("district").addEventListener("change", () => { if ($("district").value) searchDistrict($("district").value); });
 $("btn-mic").onclick = async () => {
   const t = tr();
   if (!(window.SpeechRecognition || window.webkitSpeechRecognition)) {
@@ -622,7 +673,8 @@ $("btn-mic").onclick = async () => {
     const alts = await listenOnce();
     let found = null, heard = alts[0];
     for (const a of alts) { if (resolveDistrict(a)) { found = a; break; } }
-    $("district").value = found || heard;
+    const resolved = resolveDistrict(found || heard);
+    if (resolved) $("district").value = resolved;
     $("result").innerHTML = `<div class="msg">${esc(t.heard)} ${esc(heard)}</div>`;
     await searchDistrict(found || heard);
   } catch (e) {
@@ -657,7 +709,7 @@ document.addEventListener("focusin", (e) => {
 
 /* ---------------- Start ------------------------------------------- */
 async function init() {
-  window.speechSynthesis && window.speechSynthesis.getVoices();
+  loadVoices();
   applyLanguage();
   try {
     const res = await fetch("/api/districts");
